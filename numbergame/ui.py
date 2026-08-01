@@ -13,7 +13,6 @@ def get_int_input(prompt, min_value=None, max_value=None):
         except ValueError:
             print("Invalid input! Please enter a valid integer.")
 
-
 def get_difficulty():
     """Get difficulty level from user and return (max_number, max_attempts)."""
     while True:
@@ -32,7 +31,6 @@ def get_difficulty():
             return 200, 7
         else:
             print("Invalid choice. Please try again.")
-
 
 def display_stats(stats):
     """Display overall statistics in a readable format."""
@@ -57,9 +55,8 @@ def display_stats(stats):
     print(f"Best Score: {best_display}")
     print("=" * 40)
 
-
 def print_menu():
     print("\nMAIN MENU")
     print("1. Play Game")
-    print("2. View Statistics")
+    print("2. View Statistics & Leaderboard")
     print("3. Exit")

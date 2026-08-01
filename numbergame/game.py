@@ -1,7 +1,6 @@
 import random
 from .ui import get_int_input
 
-
 class Game:
     """Encapsulates a single number-guessing game instance.
 

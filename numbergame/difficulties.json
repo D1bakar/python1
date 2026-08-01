@@ -1,0 +1,5 @@
+{
+  "easy": {"max_number": 50, "attempts": 15},
+  "medium": {"max_number": 100, "attempts": 10},
+  "hard": {"max_number": 200, "attempts": 7}
+}
