@@ -2,7 +2,6 @@ import random
 import json
 import os
 
-
 STATS_FILENAME = "stats.json"
 
 
@@ -31,7 +30,11 @@ def load_stats():
 
         # If best_score was stored as a number, ensure it's an int; if inf or invalid, set to None
         if isinstance(stats["best_score"], (int, float)):
-            stats["best_score"] = int(stats["best_score"]) if stats["best_score"] != float("inf") else None
+            stats["best_score"] = (
+                int(stats["best_score"])
+                if stats["best_score"] != float("inf")
+                else None
+            )
         else:
             stats["best_score"] = None
 
@@ -40,7 +43,9 @@ def load_stats():
     except FileNotFoundError:
         return default
     except (json.JSONDecodeError, ValueError):
-        print("Warning: stats file is corrupted or invalid. Starting with fresh statistics.")
+        print(
+            "Warning: stats file is corrupted or invalid. Starting with fresh statistics."
+        )
         return default
     except Exception as e:
         print(f"Warning: failed to load stats ({e}). Starting with fresh statistics.")
@@ -170,7 +175,9 @@ def main():
 
             if won:
                 stats["wins"] += 1
-                if stats.get("best_score") is None or attempts < stats.get("best_score"):
+                if stats.get("best_score") is None or attempts < stats.get(
+                    "best_score"
+                ):
                     stats["best_score"] = attempts
 
             # Save after each completed game so progress persists even if the program exits unexpectedly
