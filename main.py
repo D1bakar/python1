@@ -149,6 +149,10 @@ def play_game(max_number, max_attempts):
 
     print(f"\n❌ Game Over! The number was {number}.")
     return False, attempts
+# Top-level CLI that wires the package together
+from numbergame import game as _game_module
+from numbergame.stats import load_stats, save_stats
+from numbergame.ui import get_difficulty, display_stats, print_menu
 
 
 def main():
@@ -159,16 +163,14 @@ def main():
     stats = load_stats()
 
     while True:
-        print("\nMAIN MENU")
-        print("1. Play Game")
-        print("2. View Statistics")
-        print("3. Exit")
+        print_menu()
 
         choice = input("\nEnter your choice (1-3): ").strip()
 
         if choice == "1":
             max_number, max_attempts = get_difficulty()
-            won, attempts = play_game(max_number, max_attempts)
+            game = _game_module.Game(max_number, max_attempts)
+            won, attempts = game.play()
 
             stats["games"] += 1
             stats["total_attempts"] += attempts
@@ -180,14 +182,13 @@ def main():
                 ):
                     stats["best_score"] = attempts
 
-            # Save after each completed game so progress persists even if the program exits unexpectedly
+            # Save after each completed game so progress persists
             save_stats(stats)
 
         elif choice == "2":
             display_stats(stats)
 
         elif choice == "3":
-            # Save before exiting
             save_stats(stats)
             print("\nThanks for playing! Goodbye! 👋")
             break
