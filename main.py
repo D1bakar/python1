@@ -1,4 +1,66 @@
 import random
+import json
+import os
+
+
+STATS_FILENAME = "stats.json"
+
+
+def get_stats_path():
+    """Return the path to the stats file next to this script."""
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    return os.path.join(base_dir, STATS_FILENAME)
+
+
+def load_stats():
+    """Load statistics from a JSON file. Return default stats if file missing/invalid."""
+    path = get_stats_path()
+    default = {"games": 0, "wins": 0, "total_attempts": 0, "best_score": None}
+
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+
+        # Validate and normalize loaded data
+        stats = {
+            "games": int(data.get("games", 0)),
+            "wins": int(data.get("wins", 0)),
+            "total_attempts": int(data.get("total_attempts", 0)),
+            "best_score": data.get("best_score", None),
+        }
+
+        # If best_score was stored as a number, ensure it's an int; if inf or invalid, set to None
+        if isinstance(stats["best_score"], (int, float)):
+            stats["best_score"] = int(stats["best_score"]) if stats["best_score"] != float("inf") else None
+        else:
+            stats["best_score"] = None
+
+        return stats
+
+    except FileNotFoundError:
+        return default
+    except (json.JSONDecodeError, ValueError):
+        print("Warning: stats file is corrupted or invalid. Starting with fresh statistics.")
+        return default
+    except Exception as e:
+        print(f"Warning: failed to load stats ({e}). Starting with fresh statistics.")
+        return default
+
+
+def save_stats(stats):
+    """Save statistics to a JSON file next to this script."""
+    path = get_stats_path()
+    data = stats.copy()
+
+    # JSON can't represent inf; store None when best_score is not set
+    if data.get("best_score") is None:
+        data["best_score"] = None
+
+    try:
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump(data, fh, indent=4)
+    except Exception as e:
+        print(f"Warning: failed to save stats ({e}).")
 
 
 def get_difficulty():
@@ -30,6 +92,9 @@ def display_stats(stats):
     avg_attempts = stats["total_attempts"] / stats["games"]
     win_rate = (stats["wins"] / stats["games"]) * 100
 
+    best_score = stats.get("best_score")
+    best_display = f"{best_score} attempts" if best_score is not None else "N/A"
+
     print("\n" + "=" * 40)
     print("GAME STATISTICS")
     print("=" * 40)
@@ -38,7 +103,7 @@ def display_stats(stats):
     print(f"Losses: {stats['games'] - stats['wins']}")
     print(f"Win Rate: {win_rate:.1f}%")
     print(f"Average Attempts: {avg_attempts:.1f}")
-    print(f"Best Score: {stats['best_score']} attempts")
+    print(f"Best Score: {best_display}")
     print("=" * 40)
 
 
@@ -86,7 +151,7 @@ def main():
     print("WELCOME TO NUMBER GUESSING GAME!")
     print("=" * 40)
 
-    stats = {"games": 0, "wins": 0, "total_attempts": 0, "best_score": float("inf")}
+    stats = load_stats()
 
     while True:
         print("\nMAIN MENU")
@@ -105,12 +170,18 @@ def main():
 
             if won:
                 stats["wins"] += 1
-                stats["best_score"] = min(stats["best_score"], attempts)
+                if stats.get("best_score") is None or attempts < stats.get("best_score"):
+                    stats["best_score"] = attempts
+
+            # Save after each completed game so progress persists even if the program exits unexpectedly
+            save_stats(stats)
 
         elif choice == "2":
             display_stats(stats)
 
         elif choice == "3":
+            # Save before exiting
+            save_stats(stats)
             print("\nThanks for playing! Goodbye! 👋")
             break
 
