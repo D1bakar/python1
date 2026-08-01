@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-=======
 import random
 import json
 import os
@@ -194,4 +191,3 @@ def main():
 
 if __name__ == "__main__":
     main()
->>>>>>> origin/improvements/all-updates
