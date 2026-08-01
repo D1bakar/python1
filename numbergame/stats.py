@@ -1,7 +1,6 @@
 import json
 from .utils import get_stats_path
 
-
 def load_stats():
     """Load statistics from a JSON file. Return default stats if file missing/invalid."""
     path = get_stats_path()
@@ -35,9 +34,8 @@ def load_stats():
         print(f"Warning: failed to load stats ({e}). Starting with fresh statistics.")
         return default
 
-
 def save_stats(stats):
-    """Save statistics to a JSON file next to this package."""
+    """Save statistics to a JSON file in the user data directory."""
     path = get_stats_path()
     data = stats.copy()
 

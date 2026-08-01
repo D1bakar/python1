@@ -153,7 +153,7 @@ def play_game(max_number, max_attempts):
 from numbergame import game as _game_module
 from numbergame.stats import load_stats, save_stats
 from numbergame.ui import get_difficulty, display_stats, print_menu
-
+from numbergame import leaderboard as lb
 
 def main():
     print("\n" + "=" * 40)
@@ -161,6 +161,8 @@ def main():
     print("=" * 40)
 
     stats = load_stats()
+
+    player_name = input("\nEnter your player name (leave empty for 'Player'): ").strip() or "Player"
 
     while True:
         print_menu()
@@ -182,11 +184,15 @@ def main():
                 ):
                     stats["best_score"] = attempts
 
+                # Update per-player leaderboard
+                lb.update_leaderboard(player_name, attempts)
+
             # Save after each completed game so progress persists
             save_stats(stats)
 
         elif choice == "2":
             display_stats(stats)
+            print(lb.format_leaderboard())
 
         elif choice == "3":
             save_stats(stats)
@@ -195,7 +201,6 @@ def main():
 
         else:
             print("Invalid choice. Please try again.")
-
 
 if __name__ == "__main__":
     main()
