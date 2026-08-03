@@ -1,0 +1,21 @@
+cat > .gitignore <<'TXT'
+# Virtual env
+.venv/
+venv/
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+
+# OS files
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+
+# Local data dir and stats (do not commit user data)
+.numbergame/
+numbergame/*.json
+TXT
